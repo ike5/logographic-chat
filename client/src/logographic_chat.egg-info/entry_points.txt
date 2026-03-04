@@ -1,0 +1,2 @@
+[console_scripts]
+logographic-chat = logographic_chat.cli:main

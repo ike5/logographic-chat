@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: logographic-chat
+Version: 0.1.0
+Requires-Python: >=3.11
+Requires-Dist: textual>=0.80
+Requires-Dist: httpx>=0.27
+Requires-Dist: websockets>=13.0
+Requires-Dist: click>=8.1

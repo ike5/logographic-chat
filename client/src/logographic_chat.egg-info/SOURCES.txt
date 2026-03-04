@@ -1,0 +1,13 @@
+pyproject.toml
+src/logographic_chat/__init__.py
+src/logographic_chat/api.py
+src/logographic_chat/auth.py
+src/logographic_chat/cli.py
+src/logographic_chat/tui.py
+src/logographic_chat/ws.py
+src/logographic_chat.egg-info/PKG-INFO
+src/logographic_chat.egg-info/SOURCES.txt
+src/logographic_chat.egg-info/dependency_links.txt
+src/logographic_chat.egg-info/entry_points.txt
+src/logographic_chat.egg-info/requires.txt
+src/logographic_chat.egg-info/top_level.txt

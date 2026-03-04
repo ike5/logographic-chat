@@ -163,6 +163,9 @@ REST_FRAMEWORK = {
 }
 
 
+# Email — use console backend in development
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 # Django Allauth
 
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
