@@ -2,6 +2,7 @@ from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Header, Footer, Input, Static, ListView, ListItem, Label
 from .api import ChatAPI
+from .auth import clear_credentials
 from .ws import ChatSocket
 
 
@@ -31,6 +32,7 @@ class ChatApp(App):
     """
     BINDINGS = [
         ("ctrl+r", "toggle_sidebar", "Rooms"),
+        ("ctrl+l", "logout", "Logout"),
         ("escape", "quit", "Quit"),
     ]
 
@@ -81,6 +83,10 @@ class ChatApp(App):
 
         await self.socket.connect(self.current_room_id)
         self.run_worker(self.listen_for_messages(), group="ws", exclusive=True)
+
+    def action_logout(self):
+        clear_credentials()
+        self.exit()
 
     def action_toggle_sidebar(self):
         sidebar = self.query_one("#sidebar", ListView)
