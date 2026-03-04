@@ -1,5 +1,5 @@
 import click
-from .auth import load_credentials, device_login, clear_credentials, refresh_access_token
+from logographic_chat.auth import load_credentials, device_login, clear_credentials, refresh_access_token
 
 DEFAULT_SERVER = "https://chat.codebylevel.com"
 
@@ -27,7 +27,7 @@ def main(ctx, server):
             click.echo("Session expired. Please sign in again.\n")
             creds = device_login(server)
 
-    from .tui import ChatApp
+    from logographic_chat.tui import ChatApp
     app = ChatApp(server_url=server, access_token=creds["access_token"], username=creds["username"])
     app.run()
 

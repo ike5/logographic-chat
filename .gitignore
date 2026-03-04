@@ -3,3 +3,25 @@
 .idea/
 __pycache__/
 db.sqlite3
+*.egg-info/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Client
+client/build/
+client/dist/
+client/*.spec
+client/src/*.egg-info/
+
+# PyInstaller
+client/build/
+client/dist/
+client/*.spec
+
+# Python
+*.pyc
+*.pyo
+*.egg-info/

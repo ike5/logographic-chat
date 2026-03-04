@@ -796,7 +796,7 @@ The formula lives in a separate tap repo: `github.com/ike5/homebrew-logographic-
 ```bash
 cd client/
 pip install pyinstaller
-pyinstaller --onefile --name logographic-chat --paths=src -m logographic_chat.cli
+pyinstaller --onefile --name logographic-chat --paths=src src/logographic_chat/cli.py
 # Output: dist/logographic-chat
 ```
 

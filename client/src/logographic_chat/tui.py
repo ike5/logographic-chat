@@ -1,9 +1,9 @@
 from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Header, Footer, Input, Static, ListView, ListItem, Label
-from .api import ChatAPI
-from .auth import clear_credentials
-from .ws import ChatSocket
+from logographic_chat.api import ChatAPI
+from logographic_chat.auth import clear_credentials
+from logographic_chat.ws import ChatSocket
 
 
 class MessageView(Static):
