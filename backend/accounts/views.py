@@ -46,6 +46,22 @@ def device_token(request):
     })
 
 
+def device_success(request):
+    """Landing page after allauth login; resumes pending device authorization."""
+    user_code = request.session.pop("pending_device_code", None)
+    if user_code and request.user.is_authenticated:
+        try:
+            dc = DeviceCode.objects.get(user_code=user_code)
+            if not dc.is_expired:
+                dc.user = request.user
+                dc.is_authorized = True
+                dc.save()
+                return render(request, "accounts/auth_success.html")
+        except DeviceCode.DoesNotExist:
+            pass
+    return render(request, "accounts/auth_success.html")
+
+
 def device_verify(request):
     """Browser page where user enters their user_code then logs in."""
     if request.method == "GET":
@@ -54,6 +70,8 @@ def device_verify(request):
 
     if request.method == "POST":
         user_code = request.POST.get("user_code", "").strip().upper()
+        confirm = request.POST.get("confirm")
+
         try:
             dc = DeviceCode.objects.get(user_code=user_code)
         except DeviceCode.DoesNotExist:
@@ -67,6 +85,12 @@ def device_verify(request):
         if not request.user.is_authenticated:
             request.session["pending_device_code"] = user_code
             return redirect(f"/accounts/login/?next=/auth/device/verify/?code={user_code}")
+
+        if not confirm:
+            return render(request, "accounts/verify_device.html", {
+                "confirm_user": request.user.username,
+                "user_code": user_code,
+            })
 
         dc.user = request.user
         dc.is_authorized = True
