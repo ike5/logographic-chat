@@ -7,13 +7,8 @@ class LogographicChat < Formula
   license "MIT"
 
   on_macos do
-    if Hardware::CPU.arm?
-      url "https://github.com/ike5/logographic-chat/releases/download/TAG_PLACEHOLDER/logographic-chat-darwin-arm64.tar.gz"
-      sha256 "SHA256_ARM64_PLACEHOLDER"
-    else
-      url "https://github.com/ike5/logographic-chat/releases/download/TAG_PLACEHOLDER/logographic-chat-darwin-x86_64.tar.gz"
-      sha256 "SHA256_X86_64_PLACEHOLDER"
-    end
+    url "https://github.com/ike5/logographic-chat/releases/download/TAG_PLACEHOLDER/logographic-chat-darwin-arm64.tar.gz"
+    sha256 "SHA256_ARM64_PLACEHOLDER"
   end
 
   on_linux do

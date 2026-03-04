@@ -80,21 +80,18 @@ jobs:
         id: shas
         run: |
           echo "arm64=$(awk '{print $1}' sha256-darwin-arm64.txt)" >> "$GITHUB_OUTPUT"
-          echo "x86_64=$(awk '{print $1}' sha256-darwin-x86_64.txt)" >> "$GITHUB_OUTPUT"
           echo "linux=$(awk '{print $1}' sha256-linux-x86_64.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Generate formula
         env:
           TAG: ${{ github.ref_name }}
           SHA_ARM64: ${{ steps.shas.outputs.arm64 }}
-          SHA_X86_64: ${{ steps.shas.outputs.x86_64 }}
           SHA_LINUX: ${{ steps.shas.outputs.linux }}
         run: |
           VERSION="${TAG#v}"
           sed \
             -e "s|VERSION_PLACEHOLDER|${VERSION}|g" \
             -e "s|SHA256_ARM64_PLACEHOLDER|${SHA_ARM64}|g" \
-            -e "s|SHA256_X86_64_PLACEHOLDER|${SHA_X86_64}|g" \
             -e "s|SHA256_LINUX_PLACEHOLDER|${SHA_LINUX}|g" \
             -e "s|TAG_PLACEHOLDER|${TAG}|g" \
             client/build/logographic-chat.rb > formula-output.rb

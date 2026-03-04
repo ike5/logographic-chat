@@ -800,7 +800,8 @@ pyinstaller --onefile --name logographic-chat src/logographic_chat/cli.py
 # Output: dist/logographic-chat
 ```
 
-Build for each arch in CI (GitHub Actions): darwin-arm64, darwin-x86_64, linux-x86_64.
+Build for each target in CI (GitHub Actions): darwin-arm64 (macOS 14 runner), linux-x86_64 (Ubuntu).
+macOS x86_64 is dropped — GitHub no longer provides Intel Mac runners and virtually all current Macs are Apple Silicon.
 
 ### 3.2 Package as Tarballs
 
@@ -809,9 +810,6 @@ Homebrew expects a tarball, not a raw binary. After each PyInstaller build, wrap
 ```bash
 # macOS arm64
 tar -czf logographic-chat-darwin-arm64.tar.gz logographic-chat
-
-# macOS x86_64
-tar -czf logographic-chat-darwin-x86_64.tar.gz logographic-chat
 
 # Linux x86_64
 tar -czf logographic-chat-linux-x86_64.tar.gz logographic-chat
@@ -823,7 +821,6 @@ Upload the `.tar.gz` files as GitHub Release assets.
 
 ```bash
 shasum -a 256 logographic-chat-darwin-arm64.tar.gz
-shasum -a 256 logographic-chat-darwin-x86_64.tar.gz
 shasum -a 256 logographic-chat-linux-x86_64.tar.gz
 ```
 
@@ -850,13 +847,8 @@ class LogographicChat < Formula
   license "MIT"
 
   on_macos do
-    if Hardware::CPU.arm?
-      url "https://github.com/ike5/logographic-chat/releases/download/v0.1.0/logographic-chat-darwin-arm64.tar.gz"
-      sha256 "REAL_SHA256_HERE"
-    else
-      url "https://github.com/ike5/logographic-chat/releases/download/v0.1.0/logographic-chat-darwin-x86_64.tar.gz"
-      sha256 "REAL_SHA256_HERE"
-    end
+    url "https://github.com/ike5/logographic-chat/releases/download/v0.1.0/logographic-chat-darwin-arm64.tar.gz"
+    sha256 "REAL_SHA256_HERE"
   end
 
   on_linux do
