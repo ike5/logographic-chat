@@ -216,27 +216,10 @@ logographic-chat/
 
 ## Pushing new CLI
 
-(.venv) ike@Ikes-iMac logographic-chat % git tag v0.1.
-(.venv) ike@Ikes-iMac logographic-chat % git status
-On branch main
-Your branch is ahead of 'origin/main' by 2 commits.
-(use "git push" to publish your local commits)
+% git tag v0.1.
+% git push origin v0.1.0
 
-nothing to commit, working tree clean
-(.venv) ike@Ikes-iMac logographic-chat % git push
-Enumerating objects: 15, done.
-Counting objects: 100% (15/15), done.
-Delta compression using up to 8 threads
-Compressing objects: 100% (9/9), done.
-Writing objects: 100% (12/12), 5.00 KiB | 5.00 MiB/s, done.
-Total 12 (delta 2), reused 0 (delta 0), pack-reused 0 (from 0)
-remote: Resolving deltas: 100% (2/2), completed with 1 local object.
-To https://github.com/ike5/logographic-chat.git
-5a15e65..6aea5af main -> main
-(.venv) ike@Ikes-iMac logographic-chat % git tag v0.1.0
-(.venv) ike@Ikes-iMac logographic-chat % git push origin v0.1.0
-Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
-To https://github.com/ike5/logographic-chat.git
-
-* [new tag]         v0.1.0 -> v0.1.0
-  (.venv) ike@Ikes-iMac logographic-chat %
+git add .
+git commit -m "fix: use --paths for PyInstaller"
+git tag v0.1.8
+git push --tags
