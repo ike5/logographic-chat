@@ -43,20 +43,20 @@ jobs:
         run: |
           tar -czf logographic-chat-${{ matrix.target }}.tar.gz logographic-chat
 
-      - name: Compute SHA256
-        id: sha
-        working-directory: client/dist
-        run: |
-          echo "sha256=$(shasum -a 256 logographic-chat-${{ matrix.target }}.tar.gz | awk '{print $1}')" >> "$GITHUB_OUTPUT"
-
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
           files: client/dist/logographic-chat-${{ matrix.target }}.tar.gz
 
-      - name: Store SHA256 as artifact
+      - name: Compute SHA256 from release
+        id: sha
+        env:
+          TAG: ${{ github.ref_name }}
         run: |
-          echo "${{ steps.sha.outputs.sha256 }}  logographic-chat-${{ matrix.target }}.tar.gz" > sha256-${{ matrix.target }}.txt
+          URL="https://github.com/ike5/logographic-chat/releases/download/${TAG}/logographic-chat-${{ matrix.target }}.tar.gz"
+          SHA=$(curl -sL "$URL" | shasum -a 256 | awk '{print $1}')
+          echo "sha256=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "${SHA}  logographic-chat-${{ matrix.target }}.tar.gz" > sha256-${{ matrix.target }}.txt
 
       - uses: actions/upload-artifact@v4
         with:
