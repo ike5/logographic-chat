@@ -98,16 +98,21 @@ jobs:
 
       - name: Push formula to tap repo
         env:
-          TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
+          GH_TOKEN: ${{ secrets.TAP_TOKEN }}
           TAG: ${{ github.ref_name }}
         run: |
-          git clone https://github.com/ike5/homebrew-logographic-chat.git tap-repo
-          mkdir -p tap-repo/Formula
-          cp formula-output.rb tap-repo/Formula/logographic-chat.rb
-          cd tap-repo
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${TAP_TOKEN}@github.com/ike5/homebrew-logographic-chat.git
-          git add Formula/logographic-chat.rb
-          git commit -m "Update formula for ${TAG}"
-          git push origin HEAD
+          FILE_SHA=$(gh api repos/ike5/homebrew-logographic-chat/contents/Formula/logographic-chat.rb \
+            --jq '.sha' 2>/dev/null || echo "")
+          CONTENT=$(base64 -w0 formula-output.rb)
+          if [ -n "$FILE_SHA" ]; then
+            gh api repos/ike5/homebrew-logographic-chat/contents/Formula/logographic-chat.rb \
+              --method PUT \
+              -f message="Update formula for ${TAG}" \
+              -f content="${CONTENT}" \
+              -f sha="${FILE_SHA}"
+          else
+            gh api repos/ike5/homebrew-logographic-chat/contents/Formula/logographic-chat.rb \
+              --method PUT \
+              -f message="Update formula for ${TAG}" \
+              -f content="${CONTENT}"
+          fi
