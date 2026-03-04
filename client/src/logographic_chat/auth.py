@@ -25,6 +25,23 @@ def clear_credentials():
     CREDENTIALS_FILE.unlink(missing_ok=True)
 
 
+def refresh_access_token(server_url: str) -> dict | None:
+    """Try to get a new access token using the stored refresh token. Returns updated creds or None."""
+    creds = load_credentials()
+    if not creds or "refresh_token" not in creds:
+        return None
+    try:
+        with httpx.Client(base_url=server_url) as client:
+            resp = client.post("/api/token/refresh/", json={"refresh": creds["refresh_token"]})
+            if resp.status_code == 200:
+                creds["access_token"] = resp.json()["access"]
+                save_credentials(creds)
+                return creds
+    except Exception:
+        pass
+    return None
+
+
 def device_login(server_url: str) -> dict:
     with httpx.Client(base_url=server_url) as client:
         resp = client.post("/api/auth/device/")

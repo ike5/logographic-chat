@@ -1,5 +1,5 @@
 import click
-from .auth import load_credentials, device_login, clear_credentials
+from .auth import load_credentials, device_login, clear_credentials, refresh_access_token
 
 DEFAULT_SERVER = "https://chat.codebylevel.com"
 
@@ -19,6 +19,13 @@ def main(ctx, server):
         click.echo("Welcome to Logographic Chat!")
         click.echo("You need to sign in first.\n")
         creds = device_login(server)
+    else:
+        refreshed = refresh_access_token(server)
+        if refreshed:
+            creds = refreshed
+        else:
+            click.echo("Session expired. Please sign in again.\n")
+            creds = device_login(server)
 
     from .tui import ChatApp
     app = ChatApp(server_url=server, access_token=creds["access_token"], username=creds["username"])
