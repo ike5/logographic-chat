@@ -788,39 +788,80 @@ def logout():
 
 ## Part 3: Homebrew Distribution
 
+This is a CLI binary, so it uses a **Formula** (not a Cask — Casks are for GUI `.app` bundles and DMGs).
+The formula lives in a separate tap repo: `github.com/ike5/homebrew-logographic-chat`.
+
 ### 3.1 Build a Standalone Binary
 
-```bash 
+```bash
 cd client/
 pip install pyinstaller
 pyinstaller --onefile --name logographic-chat src/logographic_chat/cli.py
 # Output: dist/logographic-chat
 ```
 
-Build for each arch in CI (GitHub Actions): darwin-arm64, darwin-x86_64, linux-x86_64. Upload as GitHub release assets.
+Build for each arch in CI (GitHub Actions): darwin-arm64, darwin-x86_64, linux-x86_64.
 
-### 3.2 Homebrew Formula
+### 3.2 Package as Tarballs
+
+Homebrew expects a tarball, not a raw binary. After each PyInstaller build, wrap it:
+
+```bash
+# macOS arm64
+tar -czf logographic-chat-darwin-arm64.tar.gz logographic-chat
+
+# macOS x86_64
+tar -czf logographic-chat-darwin-x86_64.tar.gz logographic-chat
+
+# Linux x86_64
+tar -czf logographic-chat-linux-x86_64.tar.gz logographic-chat
+```
+
+Upload the `.tar.gz` files as GitHub Release assets.
+
+### 3.3 Compute SHA256 Hashes
+
+```bash
+shasum -a 256 logographic-chat-darwin-arm64.tar.gz
+shasum -a 256 logographic-chat-darwin-x86_64.tar.gz
+shasum -a 256 logographic-chat-linux-x86_64.tar.gz
+```
+
+Real SHA256 values are required — Homebrew will reject `PLACEHOLDER`.
+
+### 3.4 Tap Repo Structure
+
+The tap repo must be named `homebrew-logographic-chat` and structured as:
+
+```
+homebrew-logographic-chat/
+└── Formula/
+    └── logographic-chat.rb
+```
+
+### 3.5 Homebrew Formula
 
 ```rb
-# client/build/logographic-chat.rb
+# Formula/logographic-chat.rb  (in github.com/ike5/homebrew-logographic-chat)
 class LogographicChat < Formula
   desc "TUI chat client for Logographic Chat"
   homepage "https://github.com/ike5/logographic-chat"
   version "0.1.0"
+  license "MIT"
 
   on_macos do
     if Hardware::CPU.arm?
       url "https://github.com/ike5/logographic-chat/releases/download/v0.1.0/logographic-chat-darwin-arm64.tar.gz"
-      sha256 "PLACEHOLDER"
+      sha256 "REAL_SHA256_HERE"
     else
       url "https://github.com/ike5/logographic-chat/releases/download/v0.1.0/logographic-chat-darwin-x86_64.tar.gz"
-      sha256 "PLACEHOLDER"
+      sha256 "REAL_SHA256_HERE"
     end
   end
 
   on_linux do
     url "https://github.com/ike5/logographic-chat/releases/download/v0.1.0/logographic-chat-linux-x86_64.tar.gz"
-    sha256 "PLACEHOLDER"
+    sha256 "REAL_SHA256_HERE"
   end
 
   def install
@@ -828,18 +869,24 @@ class LogographicChat < Formula
   end
 
   test do
-    assert_match "Logographic Chat", shell_output("#{bin}/logographic-chat --help")
+    # Must not require network — --help is safe in Homebrew's sandbox
+    assert_match "Usage", shell_output("#{bin}/logographic-chat --help")
   end
 end
 ```
 
-### 3.3 Tap Setup
+### 3.6 Tap and Install
 
-```bash 
-# Repo: github.com/ike5/homebrew-logographic-chat
-# Formula at: Formula/logographic-chat.rb
+```bash
 brew tap ike5/logographic-chat
 brew install logographic-chat
+```
+
+Local testing before publishing:
+
+```bash
+brew install --build-from-source ./Formula/logographic-chat.rb
+brew audit --strict --new-formula logographic-chat
 ```
 
 ## Part 4: Deployment Checklist
