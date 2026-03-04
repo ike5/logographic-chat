@@ -17,13 +17,8 @@ jobs:
         include:
           - os: macos-14        # Apple Silicon runner
             target: darwin-arm64
-            arch: arm64
-          - os: macos-13        # Intel runner
-            target: darwin-x86_64
-            arch: x86_64
           - os: ubuntu-22.04
             target: linux-x86_64
-            arch: x86_64
 
     steps:
       - uses: actions/checkout@v4

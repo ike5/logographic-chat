@@ -79,6 +79,7 @@ python manage.py shell
 
 ```python
 from chat.models import Room
+
 Room.objects.get_or_create(name="general")
 Room.objects.get_or_create(name="random")
 ```
@@ -115,6 +116,7 @@ logographic-chat login --server http://localhost:8000
 ```
 
 This will:
+
 1. Display a device code in the terminal
 2. Open your browser to the verification URL
 3. Enter the code and log in via Django's authentication system
@@ -127,6 +129,7 @@ logographic-chat --server http://localhost:8000
 ```
 
 **Controls:**
+
 - Type messages and press Enter to send
 - Press Escape to quit
 
@@ -153,20 +156,21 @@ logographic-chat --server URL     # Specify custom server
 ```
 
 Environment variables:
+
 - `LOGOGRAPHIC_SERVER` - Default server URL
 
 ---
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/auth/device/` | POST | Start device auth flow |
-| `/api/auth/token/` | POST | Poll for auth token |
-| `/auth/device/verify/` | GET/POST | Device verification page |
-| `/api/rooms/` | GET | List chat rooms |
-| `/api/rooms/<id>/messages/` | GET | Get room messages |
-| `/ws/chat/<id>/` | WebSocket | Real-time chat |
+| Endpoint                    | Method    | Description              |
+|-----------------------------|-----------|--------------------------|
+| `/api/auth/device/`         | POST      | Start device auth flow   |
+| `/api/auth/token/`          | POST      | Poll for auth token      |
+| `/auth/device/verify/`      | GET/POST  | Device verification page |
+| `/api/rooms/`               | GET       | List chat rooms          |
+| `/api/rooms/<id>/messages/` | GET       | Get room messages        |
+| `/ws/chat/<id>/`            | WebSocket | Real-time chat           |
 
 ---
 
@@ -185,7 +189,8 @@ Environment variables:
 
 ### Client (Homebrew)
 
-See [Homebrew Distribution](CLAUDE.md#part-3-homebrew-distribution) for building standalone binaries and creating a Homebrew tap.
+See [Homebrew Distribution](CLAUDE.md#part-3-homebrew-distribution) for building standalone binaries and creating a
+Homebrew tap.
 
 ---
 
@@ -208,3 +213,30 @@ logographic-chat/
 │   └── pyproject.toml
 └── README.md
 ```
+
+## Pushing new CLI
+
+(.venv) ike@Ikes-iMac logographic-chat % git tag v0.1.
+(.venv) ike@Ikes-iMac logographic-chat % git status
+On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
+(use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+(.venv) ike@Ikes-iMac logographic-chat % git push
+Enumerating objects: 15, done.
+Counting objects: 100% (15/15), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (9/9), done.
+Writing objects: 100% (12/12), 5.00 KiB | 5.00 MiB/s, done.
+Total 12 (delta 2), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (2/2), completed with 1 local object.
+To https://github.com/ike5/logographic-chat.git
+5a15e65..6aea5af main -> main
+(.venv) ike@Ikes-iMac logographic-chat % git tag v0.1.0
+(.venv) ike@Ikes-iMac logographic-chat % git push origin v0.1.0
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+To https://github.com/ike5/logographic-chat.git
+
+* [new tag]         v0.1.0 -> v0.1.0
+  (.venv) ike@Ikes-iMac logographic-chat %
