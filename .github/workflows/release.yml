@@ -36,7 +36,7 @@ jobs:
       - name: Build binary
         working-directory: client
         run: |
-          pyinstaller --onefile --name logographic-chat logographic_chat.cli:main
+          pyinstaller --onefile --name logographic-chat --paths=src src/logographic_chat/cli.py
 
       - name: Package tarball
         working-directory: client/dist
