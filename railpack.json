@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "steps": {
+    "install": {
+      "inputs": [{ "local": true, "include": ["backend/requirements.txt"] }],
+      "commands": ["pip install -r backend/requirements.txt"]
+    }
+  },
+  "deploy": {
+    "startCommand": "cd backend && daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application"
+  }
+}
