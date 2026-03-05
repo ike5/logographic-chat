@@ -1,19 +1,7 @@
 {
   "$schema": "https://schema.railpack.com",
-  "steps": {
-    "prepare": {
-      "layer": {
-        "local": true,
-        "include": ["backend"]
-      },
-      "commands": ["cp backend/requirements.txt . && cp -r backend/logographic_chat . && cp -r backend/chat . && cp -r backend/accounts . && cp -r backend/templates . && cp backend/manage.py ."]
-    },
-    "install": {
-      "inputs": [{ "step": "prepare" }],
-      "commands": ["pip3 install -r requirements.txt"]
-    }
-  },
+  "buildAptPackages": ["git"],
   "deploy": {
-    "startCommand": "daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application"
+    "startCommand": "cd backend && pip3 install -r requirements.txt && daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application"
   }
 }
