@@ -2,7 +2,7 @@ from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Header, Footer, Input, Static, ListView, ListItem, Label
 from logographic_chat.api import ChatAPI
-from logographic_chat.auth import clear_credentials
+from logographic_chat.auth import clear_credentials, debug, error, info
 from logographic_chat.ws import ChatSocket
 
 
@@ -45,6 +45,7 @@ class ChatApp(App):
         self.socket = ChatSocket(server_url, access_token)
         self.current_room_id = None
         self.rooms: list[dict] = []
+        debug("ChatApp initialized", server=server_url, username=username)
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
@@ -54,20 +55,27 @@ class ChatApp(App):
         yield Footer()
 
     async def on_mount(self):
-        self.rooms = self.api.list_rooms()
-        sidebar = self.query_one("#sidebar", ListView)
-        for room in self.rooms:
-            await sidebar.append(ListItem(Label(room["name"]), id=f"room-{room['id']}"))
+        debug("TUI mounting, fetching rooms")
+        try:
+            self.rooms = self.api.list_rooms()
+            debug("Fetched rooms", count=len(self.rooms))
+            sidebar = self.query_one("#sidebar", ListView)
+            for room in self.rooms:
+                await sidebar.append(ListItem(Label(room["name"]), id=f"room-{room['id']}"))
 
-        if not self.rooms:
-            await self.query_one("#messages", VerticalScroll).mount(
-                MessageView("system", "No rooms available.")
-            )
-            return
+            if not self.rooms:
+                await self.query_one("#messages", VerticalScroll).mount(
+                    MessageView("system", "No rooms available.")
+                )
+                return
 
-        await self._join_room(self.rooms[0])
+            await self._join_room(self.rooms[0])
+        except Exception as e:
+            error("Failed to load rooms", error=str(e))
+            raise
 
     async def _join_room(self, room: dict):
+        debug("Joining room", room_id=room["id"], room_name=room["name"])
         if self.socket.ws:
             await self.socket.close()
 
@@ -77,14 +85,25 @@ class ChatApp(App):
         container = self.query_one("#messages", VerticalScroll)
         await container.remove_children()
 
-        for msg in self.api.get_messages(self.current_room_id):
-            await container.mount(MessageView(msg["username"], msg["content"]))
-        container.scroll_end()
+        try:
+            messages = self.api.get_messages(self.current_room_id)
+            debug("Fetched messages", count=len(messages))
+            for msg in messages:
+                await container.mount(MessageView(msg["username"], msg["content"]))
+            container.scroll_end()
+        except Exception as e:
+            error("Failed to fetch messages", error=str(e))
 
-        await self.socket.connect(self.current_room_id)
-        self.run_worker(self.listen_for_messages(), group="ws", exclusive=True)
+        try:
+            await self.socket.connect(self.current_room_id)
+            info("WebSocket connected", room_id=self.current_room_id)
+            self.run_worker(self.listen_for_messages(), group="ws", exclusive=True)
+        except Exception as e:
+            error("WebSocket connection failed", error=str(e))
+            raise
 
     def action_logout(self):
+        info("Logging out")
         clear_credentials()
         self.exit()
 
@@ -104,14 +123,16 @@ class ChatApp(App):
         self.query_one("#input", Input).focus()
 
     async def listen_for_messages(self):
+        debug("Starting message listener")
         try:
             while True:
                 data = await self.socket.receive()
+                debug("Received message", username=data.get("username"), message=data.get("message")[:50])
                 container = self.query_one("#messages", VerticalScroll)
                 await container.mount(MessageView(data["username"], data["message"]))
                 container.scroll_end()
-        except Exception:
-            pass
+        except Exception as e:
+            error("Message listener crashed", error=str(e))
 
     async def on_input_submitted(self, event: Input.Submitted):
         text = event.value.strip()

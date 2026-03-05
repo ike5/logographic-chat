@@ -1,17 +1,46 @@
 import json
 import time
 import webbrowser
+from datetime import datetime
 from pathlib import Path
 
 import httpx
 
 CONFIG_DIR = Path.home() / ".config" / "logographic-chat"
 CREDENTIALS_FILE = CONFIG_DIR / "credentials.json"
+LOG_FILE = CONFIG_DIR / "debug.log"
+
+
+def log(level: str, msg: str, **kwargs):
+    """Write to both stdout and log file."""
+    timestamp = datetime.now().isoformat(timespec="seconds")
+    log_entry = f"[{timestamp}] [{level}] {msg}"
+    if kwargs:
+        log_entry += f" | {kwargs}"
+    print(log_entry, flush=True)
+    # Also write to log file
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    with open(LOG_FILE, "a") as f:
+        f.write(log_entry + "\n")
+
+
+def debug(msg: str, **kwargs):
+    log("DEBUG", msg, **kwargs)
+
+
+def info(msg: str, **kwargs):
+    log("INFO", msg, **kwargs)
+
+
+def error(msg: str, **kwargs):
+    log("ERROR", msg, **kwargs)
 
 
 def load_credentials():
     if CREDENTIALS_FILE.exists():
+        debug("Credentials file found")
         return json.loads(CREDENTIALS_FILE.read_text())
+    debug("No credentials file found")
     return None
 
 
@@ -29,22 +58,32 @@ def refresh_access_token(server_url: str) -> dict | None:
     """Try to get a new access token using the stored refresh token. Returns updated creds or None."""
     creds = load_credentials()
     if not creds or "refresh_token" not in creds:
+        debug("No refresh token available")
         return None
     try:
+        debug("Attempting token refresh", server=server_url)
         with httpx.Client(base_url=server_url) as client:
             resp = client.post("/api/token/refresh/", json={"refresh": creds["refresh_token"]})
+            debug("Token refresh response", status=resp.status_code)
             if resp.status_code == 200:
                 creds["access_token"] = resp.json()["access"]
                 save_credentials(creds)
+                info("Token refresh successful")
                 return creds
-    except Exception:
-        pass
+            else:
+                error("Token refresh failed", status=resp.status_code, body=resp.text[:200])
+    except Exception as e:
+        error("Token refresh exception", error=str(e))
     return None
 
 
 def device_login(server_url: str) -> dict:
+    info("Starting device login flow", server=server_url)
+    debug("Creating HTTP client")
     with httpx.Client(base_url=server_url) as client:
+        debug("Calling /api/auth/device/")
         resp = client.post("/api/auth/device/")
+        debug("Device request response", status=resp.status_code)
         resp.raise_for_status()
         data = resp.json()
 
@@ -61,16 +100,22 @@ def device_login(server_url: str) -> dict:
 
         while True:
             time.sleep(interval)
+            debug("Polling /api/auth/token/")
             resp = client.post("/api/auth/token/", json={"device_code": device_code})
+            debug("Token poll response", status=resp.status_code)
             if resp.status_code == 200:
                 creds = resp.json()
                 save_credentials(creds)
                 print(f"Authenticated as @{creds['username']}")
+                info("Login successful", username=creds['username'])
                 return creds
-            error = resp.json().get("error")
-            if error == "authorization_pending":
+            error_msg = resp.json().get("error")
+            debug("Token poll error", error=error_msg)
+            if error_msg == "authorization_pending":
                 continue
-            elif error == "expired_token":
+            elif error_msg == "expired_token":
+                error("Code expired during login")
                 raise SystemExit("Code expired. Please try again.")
             else:
-                raise SystemExit(f"Auth error: {error}")
+                error("Auth error", error=error_msg)
+                raise SystemExit(f"Auth error: {error_msg}")

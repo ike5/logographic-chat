@@ -1,5 +1,5 @@
 import click
-from logographic_chat.auth import load_credentials, device_login, clear_credentials, refresh_access_token
+from logographic_chat.auth import load_credentials, device_login, clear_credentials, refresh_access_token, debug, error
 
 DEFAULT_SERVER = "https://chat.codebylevel.com"
 
@@ -14,12 +14,14 @@ def main(ctx, server):
     if ctx.invoked_subcommand is not None:
         return
 
+    debug("CLI starting", server=server)
     creds = load_credentials()
     if not creds:
         click.echo("Welcome to Logographic Chat!")
         click.echo("You need to sign in first.\n")
         creds = device_login(server)
     else:
+        debug("Found stored credentials, attempting refresh")
         refreshed = refresh_access_token(server)
         if refreshed:
             creds = refreshed
@@ -27,9 +29,14 @@ def main(ctx, server):
             click.echo("Session expired. Please sign in again.\n")
             creds = device_login(server)
 
-    from logographic_chat.tui import ChatApp
-    app = ChatApp(server_url=server, access_token=creds["access_token"], username=creds["username"])
-    app.run()
+    debug("Launching TUI", server=server, username=creds["username"])
+    try:
+        from logographic_chat.tui import ChatApp
+        app = ChatApp(server_url=server, access_token=creds["access_token"], username=creds["username"])
+        app.run()
+    except Exception as e:
+        error("TUI crashed", error=str(e))
+        raise
 
 
 @main.command()
