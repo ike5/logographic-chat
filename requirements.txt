@@ -1,0 +1,3 @@
+# Project-level requirements file
+# Railway might look for this at the root level
+# Actual requirements are in backend/requirements.txt
