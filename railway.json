@@ -5,8 +5,8 @@
     "buildCommand": "cd backend && pip3 install -r requirements.txt && python manage.py collectstatic --noinput"
   },
   "deploy": {
-    "startCommand": "cd backend && python manage.py migrate --noinput && daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application",
-    "healthcheckPath": "/admin/",
+    "startCommand": "./start.sh",
+    "healthcheckPath": "/api/rooms/",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
