@@ -6,7 +6,7 @@
   },
   "deploy": {
     "startCommand": "python manage.py migrate --noinput && daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application",
-    "healthcheckPath": "/api/rooms/",
+    "healthcheckPath": "/admin/",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
