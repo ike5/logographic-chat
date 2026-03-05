@@ -2,10 +2,10 @@
   "$schema": "https://schema.railpack.com",
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "cd backend && python manage.py collectstatic --noinput"
+    "buildCommand": "pip install -r backend/requirements.txt && cd backend && python manage.py collectstatic --noinput"
   },
   "deploy": {
-    "startCommand": "cd backend && python manage.py migrate --noinput && python manage.py collectstatic --noinput && daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application",
+    "startCommand": "cd backend && python manage.py migrate --noinput && daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application",
     "healthcheckPath": "/admin/",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
