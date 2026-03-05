@@ -1,7 +1,12 @@
 {
   "$schema": "https://schema.railpack.com",
   "buildAptPackages": ["git"],
+  "steps": {
+    "install": {
+      "commands": ["cd backend && pip3 install -r requirements.txt"]
+    }
+  },
   "deploy": {
-    "startCommand": "cd backend && pip3 install -r requirements.txt && daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application"
+    "startCommand": "cd backend && python -m daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application"
   }
 }
