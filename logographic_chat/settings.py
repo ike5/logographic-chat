@@ -15,6 +15,13 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-dev-key-change
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
+# Allow Railway hostnames
+RAILWAY_STATIC_URL = os.environ.get("RAILWAY_STATIC_URL")
+if RAILWAY_STATIC_URL:
+    from urllib.parse import urlparse
+    domain = urlparse(RAILWAY_STATIC_URL).netloc
+    if domain and domain not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(domain)
 
 # Application definition
 
@@ -80,6 +87,7 @@ DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
+        ssl_require=True if os.getenv("DATABASE_URL") else False
     )
 }
 

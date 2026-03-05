@@ -62,6 +62,12 @@ def device_success(request):
     return render(request, "accounts/auth_success.html")
 
 
+def health_check(request):
+    """Simple health check endpoint for deployment monitoring."""
+    from django.http import HttpResponse
+    return HttpResponse("OK", status=200)
+
+
 def device_verify(request):
     """Browser page where user enters their user_code then logs in."""
     if request.method == "GET":

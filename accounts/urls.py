@@ -6,4 +6,5 @@ urlpatterns = [
     path("api/auth/token/", views.device_token),
     path("auth/device/verify/", views.device_verify),
     path("auth/device/success/", views.device_success),
+    path("health/", views.health_check),
 ]
