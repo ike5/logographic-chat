@@ -1,12 +1,12 @@
 {
   "$schema": "https://schema.railpack.com",
   "steps": {
-    "install": {
-      "commands": ["pip install -r backend/requirements.txt"]
-    },
     "build": {
-      "inputs": [{ "step": "install" }],
       "commands": ["cp -r backend/. ."]
+    },
+    "install": {
+      "inputs": [{ "step": "build" }],
+      "commands": ["pip3 install -r requirements.txt"]
     }
   },
   "deploy": {
