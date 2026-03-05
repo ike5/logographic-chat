@@ -2,6 +2,10 @@
   "$schema": "https://schema.railpack.com",
   "steps": {
     "build": {
+      "layer": {
+        "local": true,
+        "include": ["backend"]
+      },
       "commands": ["cp -r backend/. ."]
     },
     "install": {
