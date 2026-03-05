@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Logographic Chat - Terminal-based Chat Application{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <div class="container">
+            <h1>Logographic Chat</h1>
+            <p>A beautiful, terminal-based chat application with seamless device authentication. Chat rooms, real-time messaging, and modern authentication powered by OAuth providers.</p>
+
+            {% if user.is_authenticated %}
+                <p style="font-size: 1.1rem;">Welcome back, <strong>{{ user.username }}</strong>! Ready to join the conversation?</p>
+                <div style="margin-top: 2rem;">
+                    <a href="/accounts/logout/" class="btn btn-outline" style="margin-right: 1rem;">Logout</a>
+                    <a href="/accounts/account/" class="btn">Account Settings</a>
+                </div>
+            {% else %}
+                <div style="margin-top: 2rem;">
+                    <a href="#client" class="btn" style="margin-right: 1rem;">Download Client</a>
+                    <a href="/accounts/login/" class="btn btn-outline">Web Login</a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <section id="features" style="background: rgba(255, 255, 255, 0.02); margin-top: 2rem;">
+        <div class="container">
+            <h2 style="text-align: center; color: white; font-size: 2.5rem; margin-bottom: 3rem;">Features</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <span class="icon">💻</span>
+                    <h3>Terminal Interface</h3>
+                    <p>Beautiful Textual-based TUI client that runs natively in your terminal. No browser required for the chat experience.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="icon">🔐</span>
+                    <h3>Device Authentication</h3>
+                    <p>Seamless OAuth flow using device codes. Authorize your terminal once and stay logged in securely.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="icon">⚡</span>
+                    <h3>Real-time Chat</h3>
+                    <p>WebSocket-powered real-time messaging with instant message delivery across all connected clients.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="client" style="background: var(--surface-color); padding: 4rem 1rem;">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 2rem; color: var(--text-color);">Get the Client</h2>
+            <div style="text-align: center;">
+                <p style="font-size: 1.2rem; margin-bottom: 2rem; color: var(--text-muted);">
+                    Install the Logographic Chat client on your system and start chatting from the terminal.
+                </p>
+                <div style="background: var(--background-color); padding: 2rem; border-radius: 1rem; display: inline-block; text-align: left;">
+                    <h4 style="color: var(--primary-color); margin-bottom: 1rem;">Install via Homebrew:</h4>
+                    <code style="background: var(--text-color); color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; display: block; font-family: 'Monaco', 'Courier New', monospace; margin-bottom: 1rem;">
+                        brew tap ike5/logographic-chat
+                        brew install logographic-chat
+                    </code>
+                    <h4 style="color: var(--primary-color); margin-bottom: 1rem;">Usage:</h4>
+                    <code style="background: var(--text-color); color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; display: block; font-family: 'Monaco', 'Courier New', monospace;">
+                        logographic-chat login  # Authenticate
+                        logographic-chat       # Start chatting
+                        logographic-chat logout # Clear credentials
+                    </code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="account-management" style="background: rgba(255, 255, 255, 0.02); padding: 4rem 1rem;">
+        <div class="container">
+            <h2 style="text-align: center; color: white; font-size: 2.5rem; margin-bottom: 2rem;">Account & Authentication</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div style="background: var(--surface-color); padding: 2rem; border-radius: 1rem; margin-bottom: 2rem;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Web-based Account Management</h3>
+                    <p style="margin-bottom: 1rem;">
+                        All account operations are handled through the web interface. This ensures security and provides a consistent experience across devices.
+                    </p>
+                    <ul style="margin-bottom: 1rem;">
+                        <li><strong>Account Creation:</strong> Sign up via the web interface with email/password or OAuth providers</li>
+                        <li><strong>Password Changes:</strong> Update your password through the account settings</li>
+                        <li><strong>Account Deletion:</strong> Delete your account permanently via the web interface</li>
+                        <li><strong>Device Authorization:</strong> Use device codes to authorize terminal clients</li>
+                    </ul>
+                    {% if user.is_authenticated %}
+                        <a href="/accounts/account/" class="btn">Manage Your Account</a>
+                    {% else %}
+                        <a href="/accounts/signup/" class="btn">Create Account</a>
+                        <a href="/accounts/login/" class="btn btn-outline" style="margin-left: 1rem;">Login</a>
+                    {% endif %}
+                </div>
+
+                <div style="background: var(--surface-color); padding: 2rem; border-radius: 1rem;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Terminal Client Authentication</h3>
+                    <p style="margin-bottom: 1rem;">
+                        The terminal client uses a secure device authorization flow:
+                    </p>
+                    <ul>
+                        <li>Run <code>logographic-chat login</code> to get a device code</li>
+                        <li>Enter the code on the web authorization page</li>
+                        <li>Your terminal automatically receives authentication tokens</li>
+                        <li>Credentials are stored securely in <code>~/.config/logographic-chat/</code></li>
+                        <li>Run <code>logographic-chat logout</code> to remove stored credentials</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

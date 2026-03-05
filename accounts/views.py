@@ -6,6 +6,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import DeviceCode
 
 
+def home(request):
+    """Serve the splash page at the root URL."""
+    return render(request, "index.html")
+
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def device_request(request):
