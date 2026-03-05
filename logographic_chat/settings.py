@@ -177,3 +177,8 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
+
+# CSRF settings for device auth flow
+CSRF_COOKIE_SECURE = False  # Allow HTTP in development
+CSRF_COOKIE_HTTPONLY = False
+CSRF_USE_SESSIONS = False

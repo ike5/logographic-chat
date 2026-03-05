@@ -40,10 +40,11 @@ def main(ctx, server):
 
 
 @main.command()
+@click.option("--server", default=DEFAULT_SERVER, envvar="LOGOGRAPHIC_SERVER")
 @click.pass_context
-def login(ctx):
+def login(ctx, server):
     """Authenticate with the server."""
-    device_login(ctx.obj["server"])
+    device_login(server)
 
 
 @main.command()
