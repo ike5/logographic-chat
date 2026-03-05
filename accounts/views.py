@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -51,7 +52,6 @@ def device_token(request):
     })
 
 
-@csrf_exempt
 def device_success(request):
     """Landing page after allauth login; resumes pending device authorization."""
     user_code = request.session.pop("pending_device_code", None)
@@ -74,7 +74,6 @@ def health_check(request):
     return HttpResponse("OK", status=200)
 
 
-from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def device_verify(request):
