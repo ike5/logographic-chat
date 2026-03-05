@@ -1,0 +1,13 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "build": {
+    "builder": "RAILPACK",
+    "buildCommand": "cd backend && pip install -r requirements.txt && python manage.py collectstatic --noinput"
+  },
+  "deploy": {
+    "startCommand": "cd backend && python manage.py migrate --noinput && DJANGO_SUPERUSER_USERNAME=$SUPERUSER DJANGO_SUPERUSER_PASSWORD=$SUPERUSER_PASSWORD DJANGO_SUPERUSER_EMAIL=$SUPERUSER_EMAIL python manage.py createsuperuser --noinput || true && daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application",
+    "healthcheckPath": "/admin/",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
