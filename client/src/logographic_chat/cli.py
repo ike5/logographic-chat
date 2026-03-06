@@ -1,18 +1,11 @@
 import click
-from logographic_chat.auth import load_credentials, device_login, clear_credentials, refresh_access_token, debug, error
 
 DEFAULT_SERVER = "https://chat.codebylevel.com"
 
 
-@click.group(invoke_without_command=True)
-@click.option("--server", default=DEFAULT_SERVER, envvar="LOGOGRAPHIC_SERVER")
-@click.pass_context
-def main(ctx, server):
-    """Logographic Chat — a TUI chat client."""
-    ctx.ensure_object(dict)
-    ctx.obj["server"] = server
-    if ctx.invoked_subcommand is not None:
-        return
+def handle_main_tui(server):
+    """Handle the actual TUI functionality in a separate function."""
+    from logographic_chat.auth import load_credentials, device_login, refresh_access_token, debug, error
 
     debug("CLI starting", server=server)
     creds = load_credentials()
@@ -39,16 +32,36 @@ def main(ctx, server):
         raise
 
 
+@click.group(invoke_without_command=True)
+@click.option("--server", default=DEFAULT_SERVER, envvar="LOGOGRAPHIC_SERVER")
+@click.pass_context
+def main(ctx, server):
+    """Logographic Chat — a TUI chat client."""
+    ctx.ensure_object(dict)
+    ctx.obj["server"] = server
+    if ctx.invoked_subcommand is not None:
+        return
+
+    # Only load async dependencies when actually running the TUI
+    handle_main_tui(server)
+
+
 @main.command()
 @click.option("--server", default=DEFAULT_SERVER, envvar="LOGOGRAPHIC_SERVER")
 @click.pass_context
 def login(ctx, server):
     """Authenticate with the server."""
+    from logographic_chat.auth import device_login
     device_login(server)
 
 
 @main.command()
 def logout():
     """Remove stored credentials."""
+    from logographic_chat.auth import clear_credentials
     clear_credentials()
     click.echo("Logged out.")
+
+
+if __name__ == "__main__":
+    main()

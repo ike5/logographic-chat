@@ -80,7 +80,7 @@ def refresh_access_token(server_url: str) -> dict | None:
 def device_login(server_url: str) -> dict:
     info("Starting device login flow", server=server_url)
     debug("Creating HTTP client")
-    with httpx.Client(base_url=server_url) as client:
+    with httpx.Client(base_url=server_url, timeout=30.0) as client:
         debug("Calling /api/auth/device/")
         resp = client.post("/api/auth/device/")
         debug("Device request response", status=resp.status_code)
@@ -91,17 +91,37 @@ def device_login(server_url: str) -> dict:
         user_code = data["user_code"]
         verify_url = data["verification_url"]
         interval = data.get("interval", 5)
+        expires_in = data.get("expires_in", 900)  # Default 15 minutes
 
         full_url = f"{verify_url}?code={user_code}"
         print(f"\nYour code: {user_code}")
         print(f"Opening {full_url} ...")
         webbrowser.open(full_url)
         print("Waiting for you to authorize in the browser...\n")
+        print("You have", expires_in // 60, "minutes to complete authentication.")
+
+        # Add timeout mechanism
+        import time
+        start_time = time.time()
 
         while True:
+            # Check if timeout exceeded
+            elapsed = time.time() - start_time
+            if elapsed > expires_in:
+                error("Login timeout exceeded")
+                raise SystemExit("Authentication timeout. Please try again.")
+
             time.sleep(interval)
             debug("Polling /api/auth/token/")
-            resp = client.post("/api/auth/token/", json={"device_code": device_code})
+            try:
+                resp = client.post("/api/auth/token/", json={"device_code": device_code}, timeout=10.0)
+            except httpx.TimeoutException:
+                error("Token polling timeout")
+                continue  # Retry on network timeout
+            except httpx.RequestError as e:
+                error("Network error during token polling", error=str(e))
+                continue  # Retry on network errors
+
             debug("Token poll response", status=resp.status_code)
             if resp.status_code == 200:
                 creds = resp.json()
@@ -109,6 +129,7 @@ def device_login(server_url: str) -> dict:
                 print(f"Authenticated as @{creds['username']}")
                 info("Login successful", username=creds['username'])
                 return creds
+
             error_msg = resp.json().get("error")
             debug("Token poll error", error=error_msg)
             if error_msg == "authorization_pending":
