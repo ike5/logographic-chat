@@ -178,7 +178,16 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-# CSRF settings for device auth flow
-CSRF_COOKIE_SECURE = False  # Allow HTTP in development
-CSRF_COOKIE_HTTPONLY = False
+# CSRF and session settings
+CSRF_COOKIE_SECURE = not DEBUG  # Require HTTPS in production
+CSRF_COOKIE_HTTPONLY = True
 CSRF_USE_SESSIONS = False
+
+# CSRF trusted origins for production
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+if not CSRF_TRUSTED_ORIGINS and not DEBUG:
+    raise ValueError("CSRF_TRUSTED_ORIGINS must be set in production")
+
+# Session security
+SESSION_COOKIE_SECURE = not DEBUG  # Secure cookies in production
+SESSION_COOKIE_HTTPONLY = True
