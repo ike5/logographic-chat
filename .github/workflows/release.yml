@@ -93,7 +93,7 @@ jobs:
             -e "s|VERSION_PLACEHOLDER|${VERSION}|g" \
             -e "s|SHA256_ARM64_PLACEHOLDER|${SHA_ARM64}|g" \
             -e "s|SHA256_LINUX_PLACEHOLDER|${SHA_LINUX}|g" \
-            -e "s|TAG_PLACEHOLDER|${TAG}|g" \
+            -e "s|TAG_PLACEHOLDER|${VERSION}|g" \
             client/build/logographic-chat.rb > formula-output.rb
 
       - name: Push formula to tap repo
