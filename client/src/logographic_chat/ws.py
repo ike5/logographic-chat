@@ -16,21 +16,28 @@ class ChatSocket:
     async def connect(self, room_id: int):
         url = f"{self.base_ws_url}/ws/chat/{room_id}/?token={self.token}"
         debug("Connecting to WebSocket", url=url)
+
+        # First try with strict SSL verification
         try:
-            # Try normal SSL connection first
             self.ws = await websockets.connect(url)
             debug("WebSocket connected", room_id=room_id)
-        except ssl.SSLCertVerificationError:
-            # If SSL verification fails, try without verification for testing
-            debug("SSL verification failed, trying without verification")
-            import ssl
+            return
+        except ssl.SSLCertVerificationError as ssl_error:
+            debug("SSL verification failed, trying without verification", error=str(ssl_error))
+            # Fall back to non-verifying SSL context
+        except Exception as e:
+            error("WebSocket connection failed", error=str(e))
+            raise
+
+        # Try again with SSL verification disabled
+        try:
             ssl_context = ssl.create_default_context()
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
             self.ws = await websockets.connect(url, ssl=ssl_context)
             debug("WebSocket connected (without SSL verification)", room_id=room_id)
         except Exception as e:
-            error("WebSocket connection failed", error=str(e))
+            error("WebSocket connection failed even with SSL disabled", error=str(e))
             raise
 
     async def send(self, message: str):
