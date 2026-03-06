@@ -231,3 +231,6 @@ git commit -m "fix: use --paths for PyInstaller"
 git tag v0.1.8
 git push origin main
 git push origin v0.1.8
+
+## Sorting
+git tag --sort=-creatordate | head -5
