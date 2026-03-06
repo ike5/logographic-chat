@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     # Third-party
     "rest_framework",
     "channels",
+    "corsheaders",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -192,3 +194,14 @@ if not CSRF_TRUSTED_ORIGINS and not DEBUG:
 # Session security
 SESSION_COOKIE_SECURE = not DEBUG  # Secure cookies in production
 SESSION_COOKIE_HTTPONLY = True
+
+# CORS settings for WebSocket connections
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all origins in development
+if not DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        "https://chat.codebylevel.com",
+        # Add other production domains here
+    ]
+
+# Allow credentials for WebSocket connections
+CORS_ALLOW_CREDENTIALS = True
