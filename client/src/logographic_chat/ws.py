@@ -16,7 +16,13 @@ class ChatSocket:
         url = f"{self.base_ws_url}/ws/chat/{room_id}/?token={self.token}"
         debug("Connecting to WebSocket", url=url)
         try:
-            self.ws = await websockets.connect(url)
+            # Disable SSL verification for development/testing
+            import ssl
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
+
+            self.ws = await websockets.connect(url, ssl=ssl_context)
             debug("WebSocket connected", room_id=room_id)
         except Exception as e:
             error("WebSocket connection failed", error=str(e))
