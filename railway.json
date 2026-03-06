@@ -5,7 +5,7 @@
     "buildCommand": "pip3 install -r requirements.txt && python manage.py collectstatic --noinput"
   },
   "deploy": {
-    "startCommand": "python manage.py migrate --noinput && daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application",
+    "startCommand": "python manage.py migrate --noinput && python manage.py create_default_rooms && daphne -b 0.0.0.0 -p $PORT logographic_chat.asgi:application",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
