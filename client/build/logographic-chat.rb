@@ -6,12 +6,12 @@ class LogographicChat < Formula
   license "MIT"
 
   on_macos do
-    url "https://github.com/ike5/logographic-chat/releases/download/vTAG_PLACEHOLDER/logographic-chat-darwin-arm64.tar.gz"
+    url "https://github.com/ike5/logographic-chat/releases/download/TAG_PLACEHOLDER/logographic-chat-darwin-arm64.tar.gz"
     sha256 "SHA256_ARM64_PLACEHOLDER"
   end
 
   on_linux do
-    url "https://github.com/ike5/logographic-chat/releases/download/vTAG_PLACEHOLDER/logographic-chat-linux-x86_64.tar.gz"
+    url "https://github.com/ike5/logographic-chat/releases/download/TAG_PLACEHOLDER/logographic-chat-linux-x86_64.tar.gz"
     sha256 "SHA256_LINUX_PLACEHOLDER"
   end
 
