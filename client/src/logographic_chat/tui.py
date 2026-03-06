@@ -136,6 +136,28 @@ class ChatApp(App):
 
     async def on_input_submitted(self, event: Input.Submitted):
         text = event.value.strip()
-        if text and self.socket:
+        if not text:
+            return
+
+        if self.current_room_id is None:
+            await self.query_one("#messages", VerticalScroll).mount(
+                MessageView("system", "No room selected. Please select a room first.")
+            )
+            event.input.value = ""
+            return
+
+        if not self.socket or not self.socket.ws:
+            await self.query_one("#messages", VerticalScroll).mount(
+                MessageView("system", "Not connected. Please wait for connection or reload the app.")
+            )
+            event.input.value = ""
+            return
+
+        try:
             await self.socket.send(text)
             event.input.value = ""
+        except Exception as e:
+            error("Failed to send message", error=str(e))
+            await self.query_one("#messages", VerticalScroll).mount(
+                MessageView("system", f"Failed to send message: {e}")
+            )

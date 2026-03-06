@@ -81,7 +81,7 @@ python manage.py shell
 from chat.models import Room
 
 Room.objects.get_or_create(name="general")
-Room.objects.get_or_create(name="random")
+Room.objects.get_or_create(name="questions")
 ```
 
 ---

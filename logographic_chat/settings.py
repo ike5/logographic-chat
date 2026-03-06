@@ -184,7 +184,8 @@ CSRF_COOKIE_HTTPONLY = True
 CSRF_USE_SESSIONS = False
 
 # CSRF trusted origins for production
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+csrf_origins = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+CSRF_TRUSTED_ORIGINS = csrf_origins.split(',') if csrf_origins else []
 if not CSRF_TRUSTED_ORIGINS and not DEBUG:
     raise ValueError("CSRF_TRUSTED_ORIGINS must be set in production")
 
