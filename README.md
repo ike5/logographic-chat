@@ -189,7 +189,7 @@ Environment variables:
 
 ### Client (Homebrew)
 
-See [Homebrew Distribution](CLAUDE.md#part-3-homebrew-distribution) for building standalone binaries and creating a
+See [Homebrew Distribution](.claude/CLAUDE.md#part-3-homebrew-distribution) for building standalone binaries and creating a
 Homebrew tap.
 
 ---
